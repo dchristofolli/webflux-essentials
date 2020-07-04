@@ -32,9 +32,15 @@ public class MusicController {
         return musicService.save(music);
     }
 
-    @PutMapping
+    @PutMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> update(@Valid @RequestBody Music music) {
-        return musicService.update(music);
+    public Mono<Void> update(@PathVariable int id, @Valid @RequestBody Music music) {
+        return musicService.update(music.withId(id));
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public Mono<Void> delete(@PathVariable Integer id) {
+        return musicService.delete(id);
     }
 }

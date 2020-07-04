@@ -37,4 +37,9 @@ public class MusicService {
                 .flatMap(repository::save)
                 .thenEmpty(Mono.empty());
     }
+
+    public Mono<Void> delete(int id) {
+        return repository.findById(id)
+                .flatMap(repository::delete);
+    }
 }
