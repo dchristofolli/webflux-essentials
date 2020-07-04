@@ -3,3 +3,13 @@ spring:
     url: r2dbc:postgresql://localhost:5432/postgres?schema=music
     username: root
     password: root
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          r2dbc: DEBUG
+
+server:
+  error:
+    include-stacktrace: on_param
