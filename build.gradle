@@ -15,6 +15,8 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
     implementation 'io.r2dbc:r2dbc-postgresql:0.8.3.RELEASE'
     implementation 'io.projectreactor.tools:blockhound:1.0.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'

@@ -2,21 +2,19 @@ package com.dchristofolli.projects.webfluxessentials.controller;
 
 import com.dchristofolli.projects.webfluxessentials.domain.Music;
 import com.dchristofolli.projects.webfluxessentials.service.MusicService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/musics")
+@AllArgsConstructor
 public class MusicController {
     private final MusicService musicService;
-
-    public MusicController(MusicService musicService) {
-        this.musicService = musicService;
-    }
 
     @GetMapping
     public Flux<Music> listAll() {
@@ -24,7 +22,19 @@ public class MusicController {
     }
 
     @GetMapping(path = "/{id}")
-    public Mono<Music> findById(@PathVariable Integer id){
+    public Mono<Music> findById(@PathVariable Integer id) {
         return musicService.findById(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<Music> save(@Valid @RequestBody Music music) {
+        return musicService.save(music);
+    }
+
+    @PutMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public Mono<Void> update(@Valid @RequestBody Music music) {
+        return musicService.update(music);
     }
 }
