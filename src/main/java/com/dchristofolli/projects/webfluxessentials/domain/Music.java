@@ -1,9 +1,6 @@
 package com.dchristofolli.projects.webfluxessentials.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.With;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -14,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @Data
 @With
+@Builder
 public class Music {
     @Id
     private Integer id;
