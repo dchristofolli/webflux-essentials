@@ -15,7 +15,8 @@ public class MusicService {
     private final MusicRepository musicRepository;
 
     public Flux<Music> findAll() {
-        return musicRepository.findAll();
+        return musicRepository.findAll()
+                .switchIfEmpty(monoResponseStatusNotFoundException());
     }
 
     public Mono<Music> findById(int id) {

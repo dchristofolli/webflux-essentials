@@ -68,7 +68,7 @@ class MusicControllerTest {
     }
 
     @Test
-    void findAll_ReturnFluxOfMusic_whenSuccessful(){
+    void listAll_ReturnFluxOfMusic_whenSuccessful(){
         StepVerifier.create(musicController.listAll())
                 .expectSubscription()
                 .expectNext(music)
