@@ -9,6 +9,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("musics")
@@ -30,6 +31,12 @@ public class MusicController {
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Music> save(@Valid @RequestBody Music music) {
         return musicService.save(music);
+    }
+
+    @PostMapping("batch")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Flux<Music> saveBatch(@Valid @RequestBody List<Music> musics) {
+        return musicService.saveAll(musics);
     }
 
     @PutMapping(path = "{id}")
