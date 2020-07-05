@@ -33,6 +33,20 @@ class MusicServiceTest {
         BlockHound.install();
     }
 
+    @BeforeEach
+    public void setup(){
+        BDDMockito.when(musicRepository.findAll())
+                .thenReturn(Flux.just(music));
+        BDDMockito.when(musicRepository.findById(ArgumentMatchers.anyInt()))
+                .thenReturn(Mono.just(music));
+        BDDMockito.when(musicRepository.save(MusicCreator.createMusicToBeSaved()))
+                .thenReturn(Mono.just(music));
+        BDDMockito.when(musicRepository.delete(ArgumentMatchers.any(Music.class)))
+                .thenReturn(Mono.empty());
+        BDDMockito.when(musicRepository.save(MusicCreator.createValidMusic()))
+                .thenReturn(Mono.empty());
+    }
+
     @Test
     void blockHoundWorks() {
         try {
@@ -47,12 +61,6 @@ class MusicServiceTest {
         } catch (Exception e) {
             Assertions.assertTrue(e.getCause() instanceof BlockingOperationError);
         }
-    }
-
-    @BeforeEach
-    public void setup(){
-        BDDMockito.when(musicRepository.findAll()).thenReturn(Flux.just(music));
-        BDDMockito.when(musicRepository.findById(ArgumentMatchers.anyInt())).thenReturn(Mono.just(music));
     }
 
     @Test
@@ -77,6 +85,48 @@ class MusicServiceTest {
                 .thenReturn(Mono.empty());
         StepVerifier.create(musicService.findById(1))
                 .expectSubscription()
+                .expectError(ResponseStatusException.class)
+                .verify();
+    }
+
+    @Test
+    void save_createsMusic_whenSuccessful(){
+        Music musicToBeSaved = MusicCreator.createMusicToBeSaved();
+        StepVerifier.create(musicService.save(musicToBeSaved))
+                .expectSubscription()
+                .expectNext(music)
+                .verifyComplete();
+    }
+
+    @Test
+    void delete_removesMusic_whenSuccessful(){
+        StepVerifier.create(musicService.delete(1))
+                .expectSubscription()
+                .verifyComplete();
+    }
+
+    @Test
+    void delete_returnsError_whenEmptyMonoIsReturned(){
+        BDDMockito.when(musicRepository.findById(ArgumentMatchers.anyInt()))
+                .thenReturn(Mono.empty());
+        StepVerifier.create(musicService.delete(1))
+                .expectSubscription()
+                .expectError(ResponseStatusException.class)
+                .verify();
+    }
+
+    @Test
+    void update_saveUpdateMusic_whenSuccessful(){
+        StepVerifier.create(musicService.update(MusicCreator.createValidMusic()))
+                .expectSubscription()
+                .verifyComplete();
+    }
+
+    @Test
+    void update_returnsMonoError_whenMusicNotExists(){
+        BDDMockito.when(musicRepository.findById(ArgumentMatchers.anyInt()))
+                .thenReturn(Mono.empty());
+        StepVerifier.create(musicService.update(MusicCreator.createValidMusic()))
                 .expectError(ResponseStatusException.class)
                 .verify();
     }

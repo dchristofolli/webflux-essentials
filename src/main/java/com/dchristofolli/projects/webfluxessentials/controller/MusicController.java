@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/musics")
+@RequestMapping("musics")
 @AllArgsConstructor
 public class MusicController {
     private final MusicService musicService;
@@ -21,7 +21,7 @@ public class MusicController {
         return musicService.findAll();
     }
 
-    @GetMapping(path = "/{id}")
+    @GetMapping(path = "{id}")
     public Mono<Music> findById(@PathVariable Integer id) {
         return musicService.findById(id);
     }
@@ -38,9 +38,9 @@ public class MusicController {
         return musicService.update(music.withId(id));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> delete(@PathVariable Integer id) {
+    public Mono<Void> delete(@PathVariable int id) {
         return musicService.delete(id);
     }
 }

@@ -11,11 +11,12 @@ public class MusicCreator {
 
     public static Music createValidMusic(){
         return Music.builder()
+                .id(1)
                 .name("Your Love")
                 .build();
     }
 
-    public static Music createValidUpdateMusic(){
+    public static Music createValidUpdatedMusic(){
         return Music.builder()
                 .name("Raining Blood")
                 .build();
