@@ -1,6 +1,7 @@
 package com.dchristofolli.projects.webfluxessentials.integration;
 
 import com.dchristofolli.projects.webfluxessentials.domain.Music;
+import com.dchristofolli.projects.webfluxessentials.exception.CustomAttributes;
 import com.dchristofolli.projects.webfluxessentials.repository.MusicRepository;
 import com.dchristofolli.projects.webfluxessentials.service.MusicCreator;
 import com.dchristofolli.projects.webfluxessentials.service.MusicService;
@@ -15,22 +16,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.reactive.function.BodyInserters;
 import reactor.blockhound.BlockHound;
 import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
-import reactor.test.StepVerifier;
 
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 @ExtendWith(SpringExtension.class)
 @WebFluxTest
-@Import(MusicService.class)
+@Import({MusicService.class, CustomAttributes.class})
 class MusicControllerIT {
     @MockBean
     private MusicRepository musicRepository;
@@ -51,6 +52,12 @@ class MusicControllerIT {
                 .thenReturn(Flux.just(music));
         BDDMockito.when(musicRepository.findById(ArgumentMatchers.anyInt()))
                 .thenReturn(Mono.just(music));
+        BDDMockito.when(musicRepository.save(MusicCreator.createMusicToBeSaved()))
+                .thenReturn(Mono.just(music));
+        BDDMockito.when(musicRepository.delete(ArgumentMatchers.any(Music.class)))
+                .thenReturn(Mono.empty());
+        BDDMockito.when(musicRepository.save(MusicCreator.createValidMusic()))
+                .thenReturn(Mono.empty());
     }
 
     @Test
@@ -94,7 +101,7 @@ class MusicControllerIT {
     }
 
     @Test
-    void findById_ReturnMonoOfMusic_whenSuccessful(){
+    void findById_ReturnMonoOfMusic_whenSuccessful() {
         testClient
                 .get()
                 .uri("/musics/{id}", 1)
@@ -105,7 +112,7 @@ class MusicControllerIT {
     }
 
     @Test
-    void findById_ReturnMonoError_whenEmptyMonoIsReturned(){
+    void findById_ReturnMonoError_whenEmptyMonoIsReturned() {
         BDDMockito.when(musicRepository.findById(ArgumentMatchers.anyInt()))
                 .thenReturn(Mono.empty());
         testClient
@@ -114,7 +121,87 @@ class MusicControllerIT {
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody()
-                .jsonPath("$.status").isEqualTo(404);
+                .jsonPath("$.status").isEqualTo(404)
+                .jsonPath("$.developerMessage").isEqualTo("A ResponseStatusException Happened");
     }
 
+    @Test
+    void save_createsMusic_whenSuccessful() {
+        Music musicToBeSaved = MusicCreator.createMusicToBeSaved();
+        testClient
+                .post()
+                .uri("/musics/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(musicToBeSaved))
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(Music.class)
+                .isEqualTo(music);
+    }
+
+    @Test
+    void save_returnsError_whenNameIsEmpty() {
+        Music musicToBeSaved = MusicCreator.createMusicToBeSaved().withName("");
+        testClient
+                .post()
+                .uri("/musics/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(musicToBeSaved))
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.status").isEqualTo(400);
+    }
+
+    @Test
+    void delete_removesMusic_whenSuccessful() {
+        testClient
+                .delete()
+                .uri("/musics/{id}", 1)
+                .exchange()
+                .expectStatus().isNoContent()
+                .expectBody();
+    }
+
+    @Test
+    void delete_returnsError_whenMusicIsNotFound() {
+        BDDMockito.when(musicRepository.findById(ArgumentMatchers.anyInt()))
+                .thenReturn(Mono.empty());
+        testClient
+                .delete()
+                .uri("/musics/{id}", 1)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.status").isEqualTo(404)
+                .jsonPath("$.developerMessage").isEqualTo("A ResponseStatusException Happened");
+    }
+
+    @Test
+    void update_saveUpdateMusic_whenSuccessful() {
+        testClient
+                .put()
+                .uri("/musics/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(music))
+                .exchange()
+                .expectStatus().isNoContent();
+    }
+
+    @Test
+    void update_returnsMonoError_whenMusicNotExists() {
+        BDDMockito.when(musicRepository.findById(ArgumentMatchers.anyInt()))
+                .thenReturn(Mono.empty());
+        testClient
+                .put()
+                .uri("/musics/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(music))
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.status").isEqualTo(404)
+                .jsonPath("$.developerMessage").isEqualTo("A ResponseStatusException Happened");
+
+    }
 }
