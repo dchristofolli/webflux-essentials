@@ -13,12 +13,11 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    implementation 'io.r2dbc:r2dbc-postgresql:0.8.3.RELEASE'
     implementation 'io.projectreactor.tools:blockhound:1.0.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'io.projectreactor:reactor-tools:3.3.7.RELEASE'
@@ -27,7 +26,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'io.projectreactor:reactor-test'
-//    testImplementation 'org.springframework.boot:spring-security-test'
+    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 }
 
 test {

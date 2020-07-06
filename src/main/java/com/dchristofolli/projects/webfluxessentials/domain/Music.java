@@ -2,12 +2,12 @@ package com.dchristofolli.projects.webfluxessentials.domain;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
 
-@Table("music")
+@Document("music")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -18,10 +18,10 @@ public class Music {
     private Integer id;
 
     @NotBlank(message = "The name of this music must be filled")
-    @Column(value = "name")
+    @Indexed(name = "name")
     private String songName;
 
     @NotBlank(message = "The name of artist must be filled")
-    @Column(value = "artist")
+    @Indexed(name = "artist")
     private String artistName;
 }
