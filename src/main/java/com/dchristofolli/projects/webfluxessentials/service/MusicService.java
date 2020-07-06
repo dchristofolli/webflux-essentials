@@ -54,7 +54,7 @@ public class MusicService {
     }
 
     private void throwResponseStatusWhenEmptyMusic(Music music){
-        if(StringUtil.isNullOrEmpty(music.getName())){
+        if(StringUtil.isNullOrEmpty(music.getSongName())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid name");
         }
     }

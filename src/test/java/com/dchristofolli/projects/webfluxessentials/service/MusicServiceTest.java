@@ -122,9 +122,9 @@ class MusicServiceTest {
 
         BDDMockito.when(musicRepository
                 .saveAll(ArgumentMatchers.anyList()))
-                .thenReturn(Flux.just(music, music.withName("")));
+                .thenReturn(Flux.just(music, music.withSongName("")));
 
-        StepVerifier.create(musicService.saveAll(List.of(musicToBeSaved, musicToBeSaved.withName(""))))
+        StepVerifier.create(musicService.saveAll(List.of(musicToBeSaved, musicToBeSaved.withSongName(""))))
                 .expectSubscription()
                 .expectNext(music)
                 .expectError(ResponseStatusException.class)
