@@ -20,6 +20,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
+import java.util.List;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
@@ -41,12 +42,20 @@ class MusicControllerTest {
     public void setup(){
         BDDMockito.when(musicService.findAll())
                 .thenReturn(Flux.just(music));
+
         BDDMockito.when(musicService.findById(ArgumentMatchers.anyInt()))
                 .thenReturn(Mono.just(music));
+
         BDDMockito.when(musicService.save(MusicCreator.createMusicToBeSaved()))
                 .thenReturn(Mono.just(music));
+
+        BDDMockito.when(musicService
+                .saveAll(List.of(MusicCreator.createMusicToBeSaved(), MusicCreator.createMusicToBeSaved())))
+                .thenReturn(Flux.just(music, music));
+
         BDDMockito.when(musicService.delete(ArgumentMatchers.anyInt()))
                 .thenReturn(Mono.empty());
+
         BDDMockito.when(musicService.update(MusicCreator.createValidMusic()))
                 .thenReturn(Mono.empty());
     }
@@ -89,6 +98,15 @@ class MusicControllerTest {
         StepVerifier.create(musicController.save(musicToBeSaved))
                 .expectSubscription()
                 .expectNext(music)
+                .verifyComplete();
+    }
+
+    @Test
+    void saveBatch_createsListOfMusic_whenSuccessful(){
+        Music musicToBeSaved = MusicCreator.createMusicToBeSaved();
+        StepVerifier.create(musicService.saveAll(List.of(musicToBeSaved, musicToBeSaved)))
+                .expectSubscription()
+                .expectNext(music, music)
                 .verifyComplete();
     }
 

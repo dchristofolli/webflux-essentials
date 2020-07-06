@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
+import java.util.List;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 @ExtendWith(SpringExtension.class)
@@ -37,12 +38,20 @@ class MusicServiceTest {
     public void setup(){
         BDDMockito.when(musicRepository.findAll())
                 .thenReturn(Flux.just(music));
+
         BDDMockito.when(musicRepository.findById(ArgumentMatchers.anyInt()))
                 .thenReturn(Mono.just(music));
+
         BDDMockito.when(musicRepository.save(MusicCreator.createMusicToBeSaved()))
                 .thenReturn(Mono.just(music));
+
+        BDDMockito.when(musicRepository
+                .saveAll(List.of(MusicCreator.createMusicToBeSaved(), MusicCreator.createMusicToBeSaved())))
+                .thenReturn(Flux.just(music, music));
+
         BDDMockito.when(musicRepository.delete(ArgumentMatchers.any(Music.class)))
                 .thenReturn(Mono.empty());
+
         BDDMockito.when(musicRepository.save(MusicCreator.createValidMusic()))
                 .thenReturn(Mono.empty());
     }
@@ -96,6 +105,30 @@ class MusicServiceTest {
                 .expectSubscription()
                 .expectNext(music)
                 .verifyComplete();
+    }
+
+    @Test
+    void saveAll_createsListOfMusic_whenSuccessful(){
+        Music musicToBeSaved = MusicCreator.createMusicToBeSaved();
+        StepVerifier.create(musicService.saveAll(List.of(musicToBeSaved, musicToBeSaved)))
+                .expectSubscription()
+                .expectNext(music, music)
+                .verifyComplete();
+    }
+
+    @Test
+    void saveAll_throwsException_whenContainsInvalidName(){
+        Music musicToBeSaved = MusicCreator.createMusicToBeSaved();
+
+        BDDMockito.when(musicRepository
+                .saveAll(ArgumentMatchers.anyList()))
+                .thenReturn(Flux.just(music, music.withName("")));
+
+        StepVerifier.create(musicService.saveAll(List.of(musicToBeSaved, musicToBeSaved.withName(""))))
+                .expectSubscription()
+                .expectNext(music)
+                .expectError(ResponseStatusException.class)
+                .verify();
     }
 
     @Test

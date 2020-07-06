@@ -7,7 +7,9 @@ import reactor.blockhound.BlockHound;
 @SpringBootApplication
 public class WebfluxEssentialsApplication {
     static {
-        BlockHound.install();
+        BlockHound.install(
+                builder -> builder.allowBlockingCallsInside("java.util.UUID", "randomUUID")
+        );
     }
 
     public static void main(String[] args) {

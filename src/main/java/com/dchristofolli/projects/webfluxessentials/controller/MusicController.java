@@ -4,6 +4,7 @@ import com.dchristofolli.projects.webfluxessentials.domain.Music;
 import com.dchristofolli.projects.webfluxessentials.service.MusicService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -47,6 +48,7 @@ public class MusicController {
 
     @DeleteMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public Mono<Void> delete(@PathVariable int id) {
         return musicService.delete(id);
     }
