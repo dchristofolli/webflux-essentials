@@ -33,7 +33,12 @@ public class MusicService {
     }
 
     public Mono<Music> save(Music music) {
-        return musicRepository.save(music);
+        return Mono.just(music)
+                .flatMap(song -> {
+                    song.setSongName(song.getSongName().toUpperCase());
+                    song.setArtistName(song.getArtistName().toUpperCase());
+                    return musicRepository.save(song).doOnNext(this::throwResponseStatusWhenEmptyMusic);
+                });
     }
 
     public Mono<Void> update(Music music) {
@@ -53,9 +58,9 @@ public class MusicService {
                 .doOnNext(this::throwResponseStatusWhenEmptyMusic);
     }
 
-    private void throwResponseStatusWhenEmptyMusic(Music music){
-        if(StringUtil.isNullOrEmpty(music.getSongName())){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid name");
+    private void throwResponseStatusWhenEmptyMusic(Music music) {
+        if (StringUtil.isNullOrEmpty(music.getSongName()) || StringUtil.isNullOrEmpty(music.getArtistName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid data");
         }
     }
 }

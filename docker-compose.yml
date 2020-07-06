@@ -9,6 +9,6 @@ services:
       - 5432:5432
     volumes:
       - ./webflux_data:/var/lib/postgresql
-      - ./db-init-scripts/initdb.sql:/docker-entrypoint-initdb.d/schema.sql
+#      - ./db-init-scripts/initdb.sql:/docker-entrypoint-initdb.d/schema.sql
 volumes:
   webflux_data:
