@@ -1,8 +1,7 @@
 spring:
-  r2dbc:
-    url: r2dbc:postgresql://localhost:5432/postgres?schema=music
-    username: root
-    password: root
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/db_music
 
 logging:
   level:
