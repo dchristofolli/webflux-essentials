@@ -37,7 +37,8 @@ public class MusicService {
                 .flatMap(song -> {
                     song.setSongName(song.getSongName().toUpperCase());
                     song.setArtistName(song.getArtistName().toUpperCase());
-                    return musicRepository.save(song).doOnNext(this::throwResponseStatusWhenEmptyMusic);
+                    return musicRepository.save(song)
+                            .doOnNext(this::throwResponseStatusWhenEmptyMusic);
                 });
     }
 
