@@ -1,6 +1,8 @@
 package com.dchristofolli.projects.webfluxessentials.controller;
 
+import com.dchristofolli.projects.webfluxessentials.domain.Artist;
 import com.dchristofolli.projects.webfluxessentials.domain.Music;
+import com.dchristofolli.projects.webfluxessentials.service.ArtistService;
 import com.dchristofolli.projects.webfluxessentials.service.MusicService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class MusicController {
     private final MusicService musicService;
+    private final ArtistService artistService;
 
     @GetMapping
     public Flux<Music> listAll() {
@@ -32,6 +35,12 @@ public class MusicController {
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Music> save(@Valid @RequestBody Music music) {
         return musicService.save(music);
+    }
+
+    @PostMapping(path = "artist")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<Artist> saveArtist(@Valid @RequestBody Artist artist) {
+        return artistService.save(artist);
     }
 
     @PostMapping("batch")

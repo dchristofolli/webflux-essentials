@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MusicService {
     private final MusicRepository musicRepository;
+    private final ArtistService artistService;
 
     public Flux<Music> findAll() {
         return musicRepository.findAll()
@@ -55,7 +57,8 @@ public class MusicService {
     }
 
     private void throwResponseStatusWhenEmptyMusic(Music music) {
-        if (StringUtil.isNullOrEmpty(music.getSongName()) || StringUtil.isNullOrEmpty(music.getArtistName())) {
+        if (StringUtil.isNullOrEmpty(music.getSongName()) ||
+                StringUtil.isNullOrEmpty(music.getArtistName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid data");
         }
     }
