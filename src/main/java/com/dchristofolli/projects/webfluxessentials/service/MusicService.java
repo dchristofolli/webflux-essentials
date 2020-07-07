@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -35,8 +34,13 @@ public class MusicService {
     }
 
     public Mono<Music> save(Music music) {
-        return musicRepository.save(music)
-                .doOnNext(this::throwResponseStatusWhenEmptyMusic);
+        artistService.existsById(music.getArtistName())
+                .flatMap(aBoolean -> {
+                    if (aBoolean)
+                        return musicRepository.save(music);
+                    return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Artist not exists"));
+                });
+        return Mono.just(music);
     }
 
     public Mono<Void> update(Music music) {
