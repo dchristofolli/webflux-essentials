@@ -24,7 +24,7 @@ public class MusicController {
     }
 
     @GetMapping(path = "{id}")
-    public Mono<Music> findById(@PathVariable Integer id) {
+    public Mono<Music> findById(@PathVariable String id) {
         return musicService.findById(id);
     }
 
@@ -42,14 +42,14 @@ public class MusicController {
 
     @PutMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> update(@PathVariable int id, @Valid @RequestBody Music music) {
+    public Mono<Void> update(@PathVariable String id, @Valid @RequestBody Music music) {
         return musicService.update(music.withId(id));
     }
 
     @DeleteMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN')")
-    public Mono<Void> delete(@PathVariable int id) {
+    public Mono<Void> delete(@PathVariable String id) {
         return musicService.delete(id);
     }
 }

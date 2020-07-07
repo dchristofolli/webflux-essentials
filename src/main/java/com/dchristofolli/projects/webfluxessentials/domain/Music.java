@@ -15,7 +15,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 public class Music {
     @Id
-    private Integer id;
+    private String id;
 
     @NotBlank(message = "The name of this music must be filled")
     @Indexed(name = "name")

@@ -23,7 +23,7 @@ public class MusicService {
                 .switchIfEmpty(monoResponseStatusNotFoundException());
     }
 
-    public Mono<Music> findById(int id) {
+    public Mono<Music> findById(String id) {
         return musicRepository.findById(id)
                 .switchIfEmpty(monoResponseStatusNotFoundException());
     }
@@ -33,13 +33,8 @@ public class MusicService {
     }
 
     public Mono<Music> save(Music music) {
-        return Mono.just(music)
-                .flatMap(song -> {
-                    song.setSongName(song.getSongName().toUpperCase());
-                    song.setArtistName(song.getArtistName().toUpperCase());
-                    return musicRepository.save(song)
-                            .doOnNext(this::throwResponseStatusWhenEmptyMusic);
-                });
+        return musicRepository.save(music)
+                .doOnNext(this::throwResponseStatusWhenEmptyMusic);
     }
 
     public Mono<Void> update(Music music) {
@@ -48,7 +43,7 @@ public class MusicService {
                 .then();
     }
 
-    public Mono<Void> delete(int id) {
+    public Mono<Void> delete(String id) {
         return findById(id)
                 .flatMap(musicRepository::delete);
     }
