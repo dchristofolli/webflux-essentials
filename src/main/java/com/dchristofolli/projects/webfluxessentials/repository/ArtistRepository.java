@@ -8,5 +8,6 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface ArtistRepository extends ReactiveMongoRepository<Artist, String> {
     Mono<Artist> findByArtistName(String name);
+
     boolean existsByArtistName(String name);
 }

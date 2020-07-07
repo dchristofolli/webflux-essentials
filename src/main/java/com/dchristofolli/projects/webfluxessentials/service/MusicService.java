@@ -34,13 +34,12 @@ public class MusicService {
     }
 
     public Mono<Music> save(Music music) {
-        artistService.existsById(music.getArtistName())
+        return artistService.existsById(music.getArtistId())
                 .flatMap(aBoolean -> {
-                    if (aBoolean)
+                    if (Boolean.TRUE.equals(aBoolean))
                         return musicRepository.save(music);
                     return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Artist not exists"));
                 });
-        return Mono.just(music);
     }
 
     public Mono<Void> update(Music music) {
@@ -62,7 +61,7 @@ public class MusicService {
 
     private void throwResponseStatusWhenEmptyMusic(Music music) {
         if (StringUtil.isNullOrEmpty(music.getSongName()) ||
-                StringUtil.isNullOrEmpty(music.getArtistName())) {
+                StringUtil.isNullOrEmpty(music.getArtistId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid data");
         }
     }

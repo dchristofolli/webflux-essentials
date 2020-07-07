@@ -20,15 +20,6 @@ public class ArtistService {
                 .switchIfEmpty(monoResponseStatusNotFoundException());
     }
 
-    public Mono<Artist> findById(String id) {
-        return artistRepository.findById(id)
-                .switchIfEmpty(monoResponseStatusNotFoundException());
-    }
-
-//    public Mono<Artist> findByName(String name) {
-//        return artistRepository.findByArtistName(name);
-//    }
-
     public Mono<Boolean> existsById(String id){
         return artistRepository.existsById(id);
     }
@@ -42,20 +33,13 @@ public class ArtistService {
                 .doOnNext(this::throwResponseStatusWhenEmptyArtist);
     }
 
-    public Mono<Void> update(Artist artist) {
-        return findById(artist.getId())
-                .flatMap(artistRepository::save)
-                .then();
-    }
-
-    public Mono<Void> delete(String id) {
-        return findById(id)
-                .flatMap(artistRepository::delete);
-    }
-
     private void throwResponseStatusWhenEmptyArtist(Artist artist) {
         if (StringUtil.isNullOrEmpty(artist.getArtistName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid data");
         }
+    }
+
+    public Mono<Void> delete(String id) {
+        return artistRepository.deleteById(id);
     }
 }
