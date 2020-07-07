@@ -31,5 +31,4 @@ out/
 ### VS Code ###
 .vscode/
 /mongo-data/
-mongo-data/journal/
 webflux_data/
