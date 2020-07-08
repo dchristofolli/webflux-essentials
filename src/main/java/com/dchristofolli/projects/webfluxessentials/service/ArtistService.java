@@ -1,14 +1,18 @@
 package com.dchristofolli.projects.webfluxessentials.service;
 
 import com.dchristofolli.projects.webfluxessentials.domain.Artist;
+import com.dchristofolli.projects.webfluxessentials.domain.Music;
 import com.dchristofolli.projects.webfluxessentials.repository.ArtistRepository;
 import io.netty.util.internal.StringUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -30,6 +34,14 @@ public class ArtistService {
 
     public Mono<Artist> save(Artist artist) {
         return artistRepository.save(artist.withArtistName(artist.getArtistName().toUpperCase()))
+                .doOnNext(this::throwResponseStatusWhenEmptyArtist);
+    }
+
+    @Transactional
+    public Flux<Artist> saveAll(List<Artist> artists) {
+        artists.parallelStream()
+                .forEach(m -> m.setArtistName(m.getArtistName().toUpperCase()));
+        return artistRepository.saveAll(artists)
                 .doOnNext(this::throwResponseStatusWhenEmptyArtist);
     }
 

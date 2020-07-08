@@ -37,7 +37,7 @@ public class MusicService {
         return artistService.existsById(music.getArtistId())
                 .flatMap(aBoolean -> {
                     if (Boolean.TRUE.equals(aBoolean))
-                        return musicRepository.save(music);
+                        return musicRepository.save(music.withSongName(music.getSongName().toUpperCase()));
                     return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Artist not exists"));
                 });
     }
@@ -55,6 +55,8 @@ public class MusicService {
 
     @Transactional
     public Flux<Music> saveAll(List<Music> musics) {
+        musics.parallelStream()
+                .forEach(m -> m.setSongName(m.getSongName().toUpperCase()));
         return musicRepository.saveAll(musics)
                 .doOnNext(this::throwResponseStatusWhenEmptyMusic);
     }
