@@ -4,11 +4,6 @@ services:
     image: mongo
     ports:
       - 27017:27017
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: webflux
-#      MONGO_INITDB_ROOT_PASSWORD: webflux
-  #    volumes:
-  #      - ./data:/data/db
   mongo-express:
     image: mongo-express
     ports:

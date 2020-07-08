@@ -16,12 +16,12 @@ import javax.validation.Valid;
 public class ArtistController {
     private final ArtistService artistService;
 
-    @GetMapping(path = "artists")
+    @GetMapping
     public Flux<Artist> listAllArtists() {
         return artistService.findAll();
     }
 
-    @PostMapping(path = "artist")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Artist> saveArtist(@Valid @RequestBody Artist artist) {
         return artistService.save(artist);
