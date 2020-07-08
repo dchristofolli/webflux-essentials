@@ -1,7 +1,6 @@
 package com.dchristofolli.projects.webfluxessentials.service;
 
 import com.dchristofolli.projects.webfluxessentials.domain.Artist;
-import com.dchristofolli.projects.webfluxessentials.domain.Music;
 import com.dchristofolli.projects.webfluxessentials.repository.ArtistRepository;
 import io.netty.util.internal.StringUtil;
 import lombok.AllArgsConstructor;
@@ -24,7 +23,7 @@ public class ArtistService {
                 .switchIfEmpty(monoResponseStatusNotFoundException());
     }
 
-    public Mono<Boolean> existsById(String id){
+    public Mono<Boolean> existsById(String id) {
         return artistRepository.existsById(id);
     }
 

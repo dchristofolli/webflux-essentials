@@ -1,7 +1,6 @@
 package com.dchristofolli.projects.webfluxessentials.controller;
 
 import com.dchristofolli.projects.webfluxessentials.domain.Artist;
-import com.dchristofolli.projects.webfluxessentials.domain.Music;
 import com.dchristofolli.projects.webfluxessentials.service.ArtistService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,7 +36,7 @@ public class ArtistController {
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> deleteArtist(String id){
+    public Mono<Void> deleteArtist(String id) {
         return artistService.delete(id);
     }
 }
