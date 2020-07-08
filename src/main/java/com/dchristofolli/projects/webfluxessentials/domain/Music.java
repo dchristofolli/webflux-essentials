@@ -17,11 +17,7 @@ public class Music {
     @Id
     private String id;
 
-    @NotBlank(message = "The name of this music must be filled")
-    @Indexed(name = "name")
     private String songName;
 
-    @NotBlank(message = "The id of artist must be filled")
-    @Indexed(name = "artist")
     private String artistId;
 }
